@@ -1,17 +1,28 @@
 # -*- coding: utf-8 -*-
-
 """
-@date:     2021/11/26
-@author:   mutian
-@version:  1.0
-@desc:     module for gateway register
-
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 """
+
 import requests
 from requests.exceptions import (ReadTimeout, RequestException, ConnectTimeout)
 
 from gateway_proxy.config import GatewayConfig, ALL_ENV
-from gateway_proxy.exception import (EnvTypeExp, SetUpUriExp, SetUpGatewayExp)
+from gateway_proxy.exception import (EnvTypeExp, SetUpUriExp, SetUpRegisterExp, SetUpGatewayExp, GetRegisterTokenErr)
 
 
 class GatewayProxy(object):
@@ -23,8 +34,15 @@ class GatewayProxy(object):
         self.env = GatewayConfig.uri.get("environment")
         if not isinstance(self.env, str) or self.env not in ALL_ENV:
             raise EnvTypeExp(env=self.env)
+        self.register_token = None
         self._set_up_gateway_service_url()
-        self._set_up_uri_params()
+        self._setup_uri_params()
+        self._setup_register_params()
+        self._get_register_token()
+        if not self.register_token:
+            raise GetRegisterTokenErr(msg="can't get register token")
+        else:
+            self.headers.update({"X-Access-Token": self.register_token})
 
     def _set_up_gateway_service_url(self):
         try:
@@ -41,7 +59,7 @@ class GatewayProxy(object):
         except SetUpGatewayExp as sue:
             raise SetUpUriExp(app_name=GatewayConfig.uri.get("app_name"), msg=str(sue), env=self.env)
 
-    def _set_up_uri_params(self):
+    def _setup_uri_params(self):
         """
         setup uri params
         """
@@ -51,8 +69,24 @@ class GatewayProxy(object):
             self.app_name = GatewayConfig.uri.get("app_name")
             self.rpc_type = GatewayConfig.uri.get("rpc_type")
             self.context_path = GatewayConfig.uri.get("context_path")
+            self.register_type = GatewayConfig.register.get("register_type")
+            self.register_servers = GatewayConfig.register.get("register_servers")
         except SetUpUriExp as se:
             raise SetUpUriExp(app_name=GatewayConfig.uri.get("app_name"), msg=str(se), env=self.env)
+        
+    def _setup_register_params(self):
+        """
+        setup register params
+        """
+        try:
+            self.register_token_type = GatewayConfig.register.get("register_type")
+            self.register_base_servers = GatewayConfig.register.get("register_servers").split(",")
+            self.register_path = "/platform/login"
+            self.register_token_servers = [_url + self.register_uri_suffix for _url in self.register_base_servers]
+            self.register_username = GatewayConfig.register.get("props", {}).get("username")
+            self.register_password = GatewayConfig.register.get("props", {}).get("password")
+        except SetUpRegisterExp as se:
+            raise SetUpRegisterExp(app_name=GatewayConfig.uri.get("app_name"), msg=str(se), env=self.env)
 
     def _request(self, url, json_data):
         """
@@ -84,6 +118,37 @@ class GatewayProxy(object):
             if msg == "success":
                 return True
             print("request ({}) fail, status code is:{}, msg is:{}".format(res.url, status_code, msg))
+            return False
+
+    def _get_register_token(self):
+        """
+        base get http request
+        """
+        default_res = ""
+        params = {
+            "userName": self.register_username,
+            "password": self.register_password
+        }
+        try:
+            for url in self.register_token_servers:
+                res = requests.get(url, params=params, timeout=5)
+                status_code = res.status_code
+                res_data = res.json()
+                token = res_data.get("data", {}).get("token", "")
+                if token:
+                    self.register_token = token
+                    break
+        except ConnectTimeout as ce:
+            print("connect timeout, detail is:{}".format(str(ce)))
+            return False
+        except ReadTimeout as rte:
+            print("read time out, detail is:{}".format(str(rte)))
+            return False
+        except RequestException as rqe:
+            print("request except, detail is:{}".format(str(rqe)))
+            return False
+        except Exception as e:
+            print("get register token except, detail is:{}".format(str(e)))
             return False
 
     def register_uri(self):
@@ -161,4 +226,3 @@ class GatewayProxy(object):
                                                                                                 path,
                                                                                                 self.context_path))
         return register_flag
-
