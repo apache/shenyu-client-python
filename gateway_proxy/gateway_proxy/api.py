@@ -21,8 +21,9 @@
 import requests
 from requests.exceptions import (ReadTimeout, RequestException, ConnectTimeout)
 
-from gateway_proxy.config import GatewayConfig, ALL_ENV
-from gateway_proxy.exception import (EnvTypeExp, SetUpUriExp, SetUpRegisterExp, SetUpGatewayExp, GetRegisterTokenErr)
+from gateway_proxy.gateway_proxy.config import GatewayConfig, ALL_ENV
+from gateway_proxy.gateway_proxy.exception import (EnvTypeExp, SetUpUriExp, SetUpRegisterExp,
+                                                   SetUpGatewayExp, GetRegisterTokenErr)
 
 
 class GatewayProxy(object):
@@ -80,7 +81,7 @@ class GatewayProxy(object):
         """
         try:
             self.register_token_type = GatewayConfig.register.get("register_type")
-            self.register_base_servers = GatewayConfig.register.get("register_servers").split(",")
+            self.register_base_servers = GatewayConfig.register.get("servers").split(",")
             self.register_path = "/platform/login"
             self.register_token_servers = [_url + self.register_uri_suffix for _url in self.register_base_servers]
             self.register_username = GatewayConfig.register.get("props", {}).get("username")

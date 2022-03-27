@@ -23,8 +23,8 @@ from setuptools import setup
 setup(
     name="gateway_proxy",                                               # project name, pip3 install gateway_proxy
     version="0.1.0",                                                    # version
-    author="mutianzhang",                                               # author
-    author_email="mutianzero@gmail.com",                                # email
+    author="https://shenyu.apache.org",                                 # author
+    author_email="https://shenyu.apache.org/zh/community",              # email
     url="https://github.com/mutianzero/incubator-shenyu-client-python", # project repo url
     description="shenyu python proxy service sdk",                      # description
     packages=["gateway_proxy"],                                         # packages name
