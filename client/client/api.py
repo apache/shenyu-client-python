@@ -21,9 +21,9 @@
 import requests
 from requests.exceptions import (ReadTimeout, RequestException, ConnectTimeout)
 
-from gateway_proxy.gateway_proxy.config import GatewayConfig, ALL_ENV
-from gateway_proxy.gateway_proxy.exception import (EnvTypeExp, SetUpUriExp, SetUpRegisterExp,
-                                                   SetUpGatewayExp, GetRegisterTokenErr)
+from client.client.config import GatewayConfig, ALL_ENV
+from client.client.exception import (EnvTypeExp, SetUpUriExp, SetUpRegisterExp,
+                                     SetUpGatewayExp, GetRegisterTokenErr)
 
 
 class GatewayProxy(object):
