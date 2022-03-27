@@ -22,7 +22,7 @@ GatewayConfig.uri = {
         "app_name": "app2",             # app name
         "host": "172.24.43.28",         # python service host
         "port": 8000,                   # python service port
-        "context_path": "/flask_test",  # context_path
+        "context_path": "/flask_test",   # context_path
         "environment": "test",          # environment
         "rpc_type": "http"              # rpc type
     }
@@ -64,7 +64,7 @@ GatewayConfig.uri = {
         "app_name": "app2",            # app name
         "host": "172.24.43.28",        # python service host
         "port": 8000,                  # python service port
-        "context_path": "/flask_test", # context_path
+        "context_path": "/flask_test",  # context_path
         "environment": "test",         # environment
         "rpc_type": "http"             # rpc type
     }
