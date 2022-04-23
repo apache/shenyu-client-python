@@ -1,2 +1,2 @@
 flask==2.0.3
-gateway-proxy==0.1.0
+Apache-ShenYu-Client=0.2

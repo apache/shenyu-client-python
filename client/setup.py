@@ -18,16 +18,16 @@
  */
 """
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
-    name="gateway_proxy",                                               # project name, pip3 install gateway_proxy
-    version="0.1.0",                                                    # version
+    name="Apache-ShenYu-Client",                                        # package name, pip3 install Apache-ShenYu-Client
+    version="0.2",                                                      # version
     author="https://shenyu.apache.org",                                 # author
-    author_email="https://shenyu.apache.org/zh/community",              # email
-    url="https://github.com/mutianzero/incubator-shenyu-client-python", # project repo url
-    description="shenyu python proxy service sdk",                      # description
-    packages=["gateway_proxy"],                                         # packages name
+    author_email="dev@shenyu.apache.org ",                              # email
+    url="https://github.com/apache/incubator-shenyu-client-python",     # project repo url
+    description="Apache ShenYu client",                                 # description
+    packages=find_packages(),                                            # include packages name
     install_requires=["requests>=2.25.1", "PyYAML>=5.3"],               # requires third packages
     python_requires=">=3.6",                                            # python version condition
     entry_points={                                                      # console scripts
