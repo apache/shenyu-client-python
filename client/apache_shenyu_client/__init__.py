@@ -18,7 +18,7 @@
  */
 """
 
-__project__ = "gateway-proxy"
+__project__ = "Apache-ShenYu-Client"
 __author__ = "https://shenyu.apache.org"
 
 

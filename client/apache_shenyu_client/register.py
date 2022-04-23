@@ -21,8 +21,8 @@
 from copy import deepcopy
 from functools import wraps
 
-from client.client.api import GatewayProxy
-from client.client.exception import (RegisterUriExp, RegisterMetaDataExp, RegisterAllMetaDataExp)
+from .api import GatewayProxy
+from .exception import (RegisterUriExp, RegisterMetaDataExp, RegisterAllMetaDataExp)
 
 
 def register_uri(func):

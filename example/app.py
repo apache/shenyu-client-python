@@ -22,16 +22,16 @@ import json
 
 from flask import Flask, jsonify, request
 
-# pip install gateway-proxy
-from gateway_proxy.config import GatewayConfig
-from gateway_proxy.api import GatewayProxy
-from gateway_proxy.register import register_uri, register_all_metadata
+# pip install Apache-ShenYu-Client
+from apache_shenyu_client.config import GatewayConfig
+from apache_shenyu_client.api import GatewayProxy
+from apache_shenyu_client.register import register_uri, register_all_metadata
 
 
 app = Flask(__name__)
 
-"""
-Configure the gateway first
+"""  
+First, modify the configuration according to the project situation, If you do not configure it, you will not be able to use apache_shenyu_client.   
 """
 GatewayConfig.register_type = "http"
 GatewayConfig.test = {
@@ -56,7 +56,7 @@ GatewayConfig.uri = {
     }
 GatewayConfig.register = {
         "register_type": "http",
-        "servers": "xx.xx.xx.xx",
+        "servers": "172.12.23.10",
         "props": {
             "username": "admin",
             "password": "123456"
