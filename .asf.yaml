@@ -16,7 +16,7 @@
 #
 
 github:
-  description: Apache ShenYu Client SDK fo python.
+  description: Apache ShenYu Client SDK for python.
   homepage: https://shenyu.apache.org/
   labels:
     - shenyu
