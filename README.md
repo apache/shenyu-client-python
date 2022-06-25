@@ -1,6 +1,6 @@
 ## Apache-ShenYu-Client
 
-[![Build and Test](https://github.com/apache/incubator-shenyu-client-python/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/apache/incubator-shenyu-client-python/actions)
+[![Build and Test](https://github.com/apache/incubator-shenyu-client-python/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/apache/incubator-shenyu-client-python/actions)
 [![codecov.io](https://codecov.io/gh/apache/incubator-shenyu-client-python/coverage.svg?branch=main)](https://app.codecov.io/gh/apache/incubator-shenyu-client-python?branch=main)
 
 Apache-Shenyu-Client for python client allows you to access ShenYu Gateway, it supports registry python service to ShenYu Gateway.
