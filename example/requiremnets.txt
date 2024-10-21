@@ -1,2 +1,0 @@
-flask==2.0.3
-Apache-ShenYu-Client=0.2
