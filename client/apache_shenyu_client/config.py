@@ -46,6 +46,7 @@ class GatewayConfig:
     register = {
         "register_type": "http",
         "servers": "xx.xx.xx.xx",
+        "namespace_id": "testNamespaceId",
         "props": {
             "username": "admin",
             "password": "123456"
@@ -60,4 +61,28 @@ class GatewayConfig:
         "context_path": "/xxx",             # context_path
         "environment": "test",              # environment
         "rpc_type": register_type           # rpc type
+    }
+
+    discovery_config = {
+        "protocol": "http://",                             # protocol
+        "discovery_type": "zookeeper",                     # discovery type
+        "server_lists": "127.0.0.1:2181",                  # server lists
+        "register_path": "/shenyu/discovery/http_example", # register path
+        "plugin_name": "",                                 # plugin name
+        "props": {
+            "baseSleepTimeMilliseconds": 1000,             # base sleep time milliseconds
+            "maxRetries": 4,                               # max retries
+            "maxSleepTimeMilliseconds": 5000,              # max sleep time milliseconds
+            "connectionTimeoutMilliseconds": 60000,        # connection timeout milliseconds
+            "sessionTimeoutMilliseconds": 8                # session timeout milliseconds
+        }
+        # "discovery_type": "nacos",
+        # "server_lists": "http://127.0.0.1:8848",
+        # "register_path": "/shenyu/discovery/http_example",
+        # "discovery_type": "eureka",
+        # "server_lists": "http://127.0.0.1:8761/eureka",
+        # "register_path": "shenyu_discovery_http_example",
+        # "discovery_type": "etcd",
+        # "server_lists": "http://127.0.0.1:2379",
+        # "register_path": "shenyu_discovery_http_example",
     }
