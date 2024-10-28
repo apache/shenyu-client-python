@@ -20,6 +20,7 @@
 
 __project__ = "Apache-ShenYu-Client"
 __author__ = "https://shenyu.apache.org"
+__version__ = "0.2"
 
 
 def get_help():

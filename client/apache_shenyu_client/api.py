@@ -26,6 +26,9 @@ from .exception import (EnvTypeExp, SetUpUriExp, SetUpRegisterExp, SetUpGatewayE
 
 
 class GatewayProxy(object):
+
+    SYS_DEFAULT_NAMESPACE_ID = "649330b6-c2d7-4edc-be8e-8a54df9eb385"
+
     """
     gateway proxy class
     """
@@ -38,6 +41,7 @@ class GatewayProxy(object):
         self._set_up_gateway_service_url()
         self._setup_uri_params()
         self._setup_register_params()
+        self._setup_register_discovery_config()
         self._get_register_token()
         if not self.register_token:
             raise GetRegisterTokenErr(msg="can't get register token")
@@ -50,12 +54,16 @@ class GatewayProxy(object):
             self.port = GatewayConfig.__dict__.get(self.env, {}).get("port")
             url_pre = "http://{}:{}"
             self.gateway_base_urls = [url_pre.format(_url, self.port) for _url in self.gateway_base_urls]
-            self.register_meta_data_suffix = "/gateway-shenyu/register-metadata"
-            self.register_uri_suffix = "/gateway-shenyu/register-uri"
+            self.register_meta_data_suffix = "/shenyu-client/register-metadata"
+            self.register_uri_suffix = "/shenyu-client/register-uri"
+            self.register_discovery_config_suffix = "/shenyu-client/register-discoveryConfig"
+            self.register_offline_suffix = "/shenyu-client/offline"
 
             self.register_meta_data_path_list = [_url + self.register_meta_data_suffix for _url in
                                                  self.gateway_base_urls]
             self.register_uri_list = [_url + self.register_uri_suffix for _url in self.gateway_base_urls]
+            self.register_discovery_config_list = [_url + self.register_discovery_config_suffix for _url in
+                                                   self.gateway_base_urls]
         except SetUpGatewayExp as sue:
             raise SetUpUriExp(app_name=GatewayConfig.uri.get("app_name"), msg=str(sue), env=self.env)
 
@@ -81,10 +89,24 @@ class GatewayProxy(object):
         try:
             self.register_token_type = GatewayConfig.register.get("register_type")
             self.register_base_servers = GatewayConfig.register.get("servers").split(",")
+            self.register_namespace_id = GatewayConfig.register.get("namespace_id")
             self.register_path = "/platform/login"
             self.register_token_servers = [_url + self.register_uri_suffix for _url in self.register_base_servers]
             self.register_username = GatewayConfig.register.get("props", {}).get("username")
             self.register_password = GatewayConfig.register.get("props", {}).get("password")
+        except SetUpRegisterExp as se:
+            raise SetUpRegisterExp(app_name=GatewayConfig.uri.get("app_name"), msg=str(se), env=self.env)
+
+    def _setup_register_discovery_config(self):
+        """
+        setup register discovery config
+        """
+        try:
+            self.discovery_type = GatewayConfig.discovery_config.get("discovery_type")
+            self.discovery_server_lists = GatewayConfig.discovery_config.get("server_lists")
+            self.discovery_register_path = GatewayConfig.discovery_config.get("register_path")
+            self.discovery_plugin_name = GatewayConfig.discovery_config.get("plugin_name")
+            self.discovery_props = GatewayConfig.discovery_config.get("props")
         except SetUpRegisterExp as se:
             raise SetUpRegisterExp(app_name=GatewayConfig.uri.get("app_name"), msg=str(se), env=self.env)
 
@@ -159,6 +181,7 @@ class GatewayProxy(object):
             "appName": self.app_name,
             "contextPath": self.context_path,
             "rpcType": self.rpc_type,
+            "namespaceId": self.register_namespace_id | self.SYS_DEFAULT_NAMESPACE_ID,
             "host": self.host,
             "port": self.port
         }
@@ -203,6 +226,7 @@ class GatewayProxy(object):
         json_data = {
             "appName": self.app_name,
             "contextPath": self.context_path,
+            "namespaceId": self.register_namespace_id | self.SYS_DEFAULT_NAMESPACE_ID,
             "path": path,
             "pathDesc": path_desc,
             "rpcType": self.rpc_type,
@@ -225,4 +249,71 @@ class GatewayProxy(object):
             print("[ERROR],register metadata fail, app_name:{}, path:{}, contextPath:{}".format(self.app_name,
                                                                                                 path,
                                                                                                 self.context_path))
+        return register_flag
+
+    def register_discovery_config(self, **kwargs):
+        """
+        register discovery config
+
+        """
+        json_data = {
+            "name": "default" + self.discovery_type,
+            "selectorName": self.context_path,
+            "handler": {},
+            "listenerNode": self.discovery_register_path,
+            "serverList": self.register_servers,
+            "discoveryType": self.discovery_type,
+            "pluginName": self.discovery_plugin_name,
+            "props": self.discovery_props
+        }
+        register_flag = False
+        for _url in self.register_discovery_config_suffix:
+            res = self._request(_url, json_data)
+            if not res:
+                continue
+            else:
+                print("[SUCCESS], register discovery config success, register data is:{}".format(str(json_data)))
+                register_flag = True
+                break
+        if not register_flag:
+            print("[ERROR],register discovery config fail, app_name:{}, contextPath:{}".format(self.app_name,
+                                                                                                self.context_path))
+        return register_flag
+
+    def offline_register(self):
+        """
+        offline register
+
+        let json_data = serde_json::json!({
+            "appName": app_name,
+            "contextPath": context_path,
+            "protocol": rpc_type,
+            "host": host.clone().unwrap(),
+            "port": port,
+            "namespaceId": namespace_id,
+            "eventType": EventType::REGISTER.to_string(),
+        });
+        """
+        json_data = {
+            "appName": self.app_name,
+            "contextPath": self.context_path,
+            "rpcType": self.rpc_type,
+            "protocol": self.rpc_type,
+            "host": self.host,
+            "port": self.port,
+            "namespaceId": self.register_namespace_id | self.SYS_DEFAULT_NAMESPACE_ID,
+            "eventType": "OFFLINE"
+        }
+        register_flag = False
+        for _url in self.register_offline_suffix:
+            res = self._request(_url, json_data)
+            if not res:
+                continue
+            else:
+                print("[SUCCESS], offline register success, register data is:{}".format(str(json_data)))
+                register_flag = True
+                break
+        if not register_flag:
+            print("[ERROR],offline register fail, app_name:{}, contextPath:{}".format(self.app_name,
+                                                                                       self.context_path))
         return register_flag
