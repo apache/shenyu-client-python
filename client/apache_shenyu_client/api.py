@@ -91,7 +91,7 @@ class GatewayProxy(object):
             self.register_base_servers = GatewayConfig.register.get("servers").split(",")
             self.register_namespace_id = GatewayConfig.register.get("namespace_id")
             self.register_path = "/platform/login"
-            self.register_token_servers = [_url + self.register_uri_suffix for _url in self.register_base_servers]
+            self.register_token_servers = [_url + self.register_path for _url in self.register_base_servers]
             self.register_username = GatewayConfig.register.get("props", {}).get("username")
             self.register_password = GatewayConfig.register.get("props", {}).get("password")
         except SetUpRegisterExp as se:
@@ -181,7 +181,7 @@ class GatewayProxy(object):
             "appName": self.app_name,
             "contextPath": self.context_path,
             "rpcType": self.rpc_type,
-            "namespaceId": self.register_namespace_id | self.SYS_DEFAULT_NAMESPACE_ID,
+            "namespaceId": self.register_namespace_id or self.SYS_DEFAULT_NAMESPACE_ID,
             "host": self.host,
             "port": self.port
         }
@@ -226,7 +226,7 @@ class GatewayProxy(object):
         json_data = {
             "appName": self.app_name,
             "contextPath": self.context_path,
-            "namespaceId": self.register_namespace_id | self.SYS_DEFAULT_NAMESPACE_ID,
+            "namespaceId": self.register_namespace_id or self.SYS_DEFAULT_NAMESPACE_ID,
             "path": path,
             "pathDesc": path_desc,
             "rpcType": self.rpc_type,
