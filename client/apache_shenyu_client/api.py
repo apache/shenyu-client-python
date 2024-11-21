@@ -24,6 +24,8 @@ from requests.exceptions import (ReadTimeout, RequestException, ConnectTimeout)
 from .config import GatewayConfig, ALL_ENV
 from .exception import (EnvTypeExp, SetUpUriExp, SetUpRegisterExp, SetUpGatewayExp, GetRegisterTokenErr)
 
+__all__ = ["GatewayProxy"]
+
 
 class GatewayProxy(object):
 
@@ -32,6 +34,7 @@ class GatewayProxy(object):
     """
     gateway proxy class
     """
+
     def __init__(self):
         self.headers = {"Content-Type": "application/json;charset=UTF-8"}
         self.env = GatewayConfig.uri.get("environment")
@@ -90,6 +93,8 @@ class GatewayProxy(object):
             self.register_token_type = GatewayConfig.register.get("register_type")
             self.register_base_servers = GatewayConfig.register.get("servers").split(",")
             self.register_namespace_id = GatewayConfig.register.get("namespace_id")
+            self.register_namespace_id = self.register_namespace_id.split(";") if self.register_namespace_id else [
+                self.SYS_DEFAULT_NAMESPACE_ID]
             self.register_path = "/platform/login"
             self.register_token_servers = [_url + self.register_path for _url in self.register_base_servers]
             self.register_username = GatewayConfig.register.get("props", {}).get("username")
@@ -181,19 +186,21 @@ class GatewayProxy(object):
             "appName": self.app_name,
             "contextPath": self.context_path,
             "rpcType": self.rpc_type,
-            "namespaceId": self.register_namespace_id or self.SYS_DEFAULT_NAMESPACE_ID,
+            "namespaceId": self.register_namespace_id[0],
             "host": self.host,
             "port": self.port
         }
         register_flag = False
         for _url in self.register_uri_list:
-            res = self._request(_url, json_data)
-            if not res:
-                continue
-            else:
-                print("[SUCCESS], register uri success, register data is:{}".format(str(json_data)))
-                register_flag = True
-                break
+            for _namespace in self.register_namespace_id:
+                json_data["namespaceId"] = _namespace
+                res = self._request(_url, json_data)
+                if not res:
+                    continue
+                else:
+                    print("[SUCCESS], register uri success, register data is:{}".format(str(json_data)))
+                    register_flag = True
+                    break
         if not register_flag:
             print("[ERROR], register uri fail, app_name is:{}, host is:{}, port is:{}".format(self.app_name,
                                                                                               self.host,
@@ -226,7 +233,7 @@ class GatewayProxy(object):
         json_data = {
             "appName": self.app_name,
             "contextPath": self.context_path,
-            "namespaceId": self.register_namespace_id or self.SYS_DEFAULT_NAMESPACE_ID,
+            "namespaceId": self.register_namespace_id[0],
             "path": path,
             "pathDesc": path_desc,
             "rpcType": self.rpc_type,
@@ -238,13 +245,15 @@ class GatewayProxy(object):
         }
         register_flag = False
         for _url in self.register_meta_data_path_list:
-            res = self._request(_url, json_data)
-            if not res:
-                continue
-            else:
-                print("[SUCCESS], register metadata success, register data is:{}".format(str(json_data)))
-                register_flag = True
-                break
+            for _namespace in self.register_namespace_id:
+                json_data["namespaceId"] = _namespace
+                res = self._request(_url, json_data)
+                if not res:
+                    continue
+                else:
+                    print("[SUCCESS], register metadata success, register data is:{}".format(str(json_data)))
+                    register_flag = True
+                    break
         if not register_flag:
             print("[ERROR],register metadata fail, app_name:{}, path:{}, contextPath:{}".format(self.app_name,
                                                                                                 path,
@@ -277,7 +286,7 @@ class GatewayProxy(object):
                 break
         if not register_flag:
             print("[ERROR],register discovery config fail, app_name:{}, contextPath:{}".format(self.app_name,
-                                                                                                self.context_path))
+                                                                                               self.context_path))
         return register_flag
 
     def offline_register(self):
@@ -301,19 +310,21 @@ class GatewayProxy(object):
             "protocol": self.rpc_type,
             "host": self.host,
             "port": self.port,
-            "namespaceId": self.register_namespace_id | self.SYS_DEFAULT_NAMESPACE_ID,
+            "namespaceId": self.register_namespace_id[0],
             "eventType": "OFFLINE"
         }
         register_flag = False
         for _url in self.register_offline_suffix:
-            res = self._request(_url, json_data)
-            if not res:
-                continue
-            else:
-                print("[SUCCESS], offline register success, register data is:{}".format(str(json_data)))
-                register_flag = True
-                break
+            for _namespace in self.register_namespace_id:
+                json_data["namespaceId"] = _namespace
+                res = self._request(_url, json_data)
+                if not res:
+                    continue
+                else:
+                    print("[SUCCESS], offline register success, register data is:{}".format(str(json_data)))
+                    register_flag = True
+                    break
         if not register_flag:
             print("[ERROR],offline register fail, app_name:{}, contextPath:{}".format(self.app_name,
-                                                                                       self.context_path))
+                                                                                      self.context_path))
         return register_flag
