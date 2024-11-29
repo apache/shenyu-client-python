@@ -193,6 +193,8 @@ class GatewayProxy(object):
         register_flag = False
         for _url in self.register_uri_list:
             for _namespace in self.register_namespace_id:
+                if not _namespace:
+                    continue
                 json_data["namespaceId"] = _namespace
                 res = self._request(_url, json_data)
                 if not res:
@@ -246,6 +248,8 @@ class GatewayProxy(object):
         register_flag = False
         for _url in self.register_meta_data_path_list:
             for _namespace in self.register_namespace_id:
+                if not _namespace:
+                    continue
                 json_data["namespaceId"] = _namespace
                 res = self._request(_url, json_data)
                 if not res:
@@ -316,6 +320,8 @@ class GatewayProxy(object):
         register_flag = False
         for _url in self.register_offline_suffix:
             for _namespace in self.register_namespace_id:
+                if not _namespace:
+                    continue
                 json_data["namespaceId"] = _namespace
                 res = self._request(_url, json_data)
                 if not res:
