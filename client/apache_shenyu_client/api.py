@@ -281,13 +281,17 @@ class GatewayProxy(object):
         }
         register_flag = False
         for _url in self.register_discovery_config_suffix:
-            res = self._request(_url, json_data)
-            if not res:
-                continue
-            else:
-                print("[SUCCESS], register discovery config success, register data is:{}".format(str(json_data)))
-                register_flag = True
-                break
+            for _namespace in self.register_namespace_id:
+                if not _namespace:
+                    continue
+                json_data["namespaceId"] = _namespace
+                res = self._request(_url, json_data)
+                if not res:
+                    continue
+                else:
+                    print("[SUCCESS], register discovery config success, register data is:{}".format(str(json_data)))
+                    register_flag = True
+                    break
         if not register_flag:
             print("[ERROR],register discovery config fail, app_name:{}, contextPath:{}".format(self.app_name,
                                                                                                self.context_path))
