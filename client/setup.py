@@ -22,10 +22,10 @@ from setuptools import setup, find_packages
 
 setup(
     name="Apache-ShenYu-Client",                                        # package name, pip3 install Apache-ShenYu-Client
-    version="0.2",                                                      # version
+    version="1.0",                                                      # version
     author="https://shenyu.apache.org",                                 # author
     author_email="dev@shenyu.apache.org ",                              # email
-    url="https://github.com/apache/incubator-shenyu-client-python",     # project repo url
+    url="https://github.com/apache/shenyu-client-python",               # project repo url
     description="Apache ShenYu client",                                 # description
     packages=find_packages(),                                            # include packages name
     install_requires=["requests>=2.25.1", "PyYAML>=5.3"],               # requires third packages
