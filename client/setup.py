@@ -22,7 +22,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="Apache-ShenYu-Client",                                        # package name, pip3 install Apache-ShenYu-Client
-    version="1.0",                                                      # version
+    version="1.0.0",                                                      # version
     author="https://shenyu.apache.org",                                 # author
     author_email="dev@shenyu.apache.org ",                              # email
     url="https://github.com/apache/shenyu-client-python",               # project repo url
