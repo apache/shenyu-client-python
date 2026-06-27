@@ -158,7 +158,7 @@ class GatewayProxy(object):
         }
         try:
             for url in self.register_token_servers:
-                res = requests.get(url, params=params, timeout=5)
+                res = requests.post(url, json=params, timeout=5)
                 status_code = res.status_code
                 res_data = res.json()
                 token = res_data.get("data", {}).get("token", "")
